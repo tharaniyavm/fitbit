@@ -3,6 +3,18 @@ import pandas as pd
 import numpy as np
 from sklearn import metrics
 from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+from xgboost import XGBRegressor
+from sklearn.svm import SVR
+
+
 
 # Extract the csv file
 import pandas as pd
@@ -19,7 +31,6 @@ fitbitdf.columns = fitbitdf.columns.str.replace(' ', '_')
 # 2. Remove all other special characters (keeping the underscores)
 fitbitdf.columns = fitbitdf.columns.str.replace(r'[^a-zA-Z0-9_]', '', regex=True)
 
-st.dataframe(fitbitdf)
 
 # Encoding
 
@@ -31,8 +42,6 @@ categorical_cols = ['gender', 'workout_type']
 # drop_first=True is often used to avoid the "dummy variable trap" (multicollinearity)
 df_encoded = pd.get_dummies(fitbitdf, columns=categorical_cols, drop_first=False)
 
-# 3. Display the first few rows of the new dataframe
-st.dataframe(df_encoded.head())
 
 
 # Identify numerical columns to clean
@@ -49,7 +58,7 @@ for col in cols:
     # Keep only rows within the boundaries
     df_encoded = df_encoded[(df_encoded[col] >= lower) & (df_encoded[col] <= upper)]
 
-print(f"Dataset size after removal: {df_encoded.shape}")
+# st.success(f"Dataset size after removal: {df_encoded.shape}")
 
 # Selecting Features and Target
 
@@ -59,29 +68,23 @@ feature=df_encoded[[
                     #'hr_intensity',
                     'session_duration_hours','weight_kg','bmi','height_m']] #Feature x
 target=df_encoded['calories_burned_kcal'] #Target y
-print(feature)
-print(target)
+# st.info(feature)
+# st.info(target)
 
 # Spliting Data
-from sklearn.model_selection import train_test_split
-
 
 # Split data into training and testing sets
 x_train, x_test, y_train, y_test = train_test_split(feature, target, test_size=0.2, random_state=4)
 
 #Standard Scaler
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+
 
 # Initialize StandardScaler
 scaler = StandardScaler()
 x_train_scaled = scaler.fit_transform(x_train)
 x_test_scaled = scaler.transform(x_test)
 
-from sklearn import metrics
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-import numpy as np
+
 
 # Train Linear Regression Model -  1
 linear_model = LinearRegression()
@@ -89,7 +92,7 @@ linear_model.fit(x_train_scaled, y_train)
 y_pred_standard = linear_model.predict(x_test_scaled) # Make prediction on test set
 
 # KNN Model -  2
-from sklearn.neighbors import KNeighborsRegressor
+
 
 # Train K-Nearest Neighbors Regression
 knn_model = KNeighborsRegressor(n_neighbors=5) # You can adjust n_neighbors
@@ -97,7 +100,7 @@ knn_model.fit(x_train_scaled, y_train)
 y_pred_knn = knn_model.predict(x_test_scaled) # Make prediction on test set
 
 # Random Forest Model - 3
-from sklearn.ensemble import RandomForestRegressor
+
 
 # Train Random Forest Regressor
 # You can adjust parameters like n_estimators, random_state, etc.
@@ -106,7 +109,7 @@ rf_model.fit(x_train_scaled, y_train)
 y_pred_rf = rf_model.predict(x_test_scaled) # Make prediction on test set
 
 # Decision Tree Model - 4
-from sklearn.tree import DecisionTreeRegressor
+
 
 # Train Decision Tree Regressor
 # You can adjust parameters like random_state, max_depth, etc.
@@ -115,10 +118,7 @@ dt_model.fit(x_train_scaled, y_train)
 y_pred_dt = dt_model.predict(x_test_scaled) # Make prediction on test set
 
 # XGBoost Regressor - Model 5
-from xgboost import XGBRegressor
-from sklearn import metrics
-from sklearn.metrics import r2_score
-import numpy as np
+
 
 # Train XGBoost Regressor
 xgb_model = XGBRegressor(random_state=42) # You can adjust parameters here
@@ -126,7 +126,7 @@ xgb_model.fit(x_train_scaled, y_train)
 y_pred_xgb = xgb_model.predict(x_test_scaled) # Make prediction on test set
 
 # Support Vector Regressor (SVR) - Model 6
-from sklearn.svm import SVR
+
 
 # Train SVR Model
 # You can adjust parameters like kernel, C, gamma, etc.
