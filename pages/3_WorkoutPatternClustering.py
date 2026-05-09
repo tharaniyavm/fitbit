@@ -47,7 +47,7 @@ with col2:
 # 7. Insights Section
 st.info("""
 **Interpreting the Patterns:**
-- **High Burn Rate / High BPM**: Likely HIIT or heavy cardio.
-- **Low Burn Rate / Low BPM**: Likely flexibility, walking, or recovery.
-- **Moderate Burn Rate / Moderate BPM**: Likely steady-state endurance.
+- **0 (Dark Blue) - High Burn Rate / High BPM**: Likely HIIT or heavy cardio -	Running, HIIT, Cycling.
+- **1 (Lightest) - Low Burn Rate / Low BPM**: Likely Yoga , flexibility, walking, or recovery Light Cardio.
+- **2 (Mid Blue) - Moderate Burn Rate / Moderate BPM**: Likely Strength Training or steady-state endurance - Weightlifting, Sprints.
 """)
