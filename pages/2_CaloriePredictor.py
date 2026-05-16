@@ -8,7 +8,7 @@ st.set_page_config(page_title="Calorie Predictor", page_icon="⚡")
 
 def prediction_page():
     st.title("🏃 Calorie Burn Predictor")
-    st.markdown("Enter your workout details below to estimate calories burned using the trained model.")
+    st.markdown("Enter your workout details below to estimate calories burned using the trained model(Linear Regression)")
 
     # --- LOAD PRE-TRAINED MODEL & SCALER ---
     try:
@@ -23,7 +23,7 @@ def prediction_page():
         return
 
     # --- USER INPUT SECTION ---
-    st.markdown("### 📊 Workout & Body Metrics")
+    st.markdown("### 📊 Workout & Body Features")
     
     col1, col2 = st.columns(2)
     
@@ -40,7 +40,7 @@ def prediction_page():
     st.markdown("---")
 
     # --- INFERENCE ---
-    if st.button("🚀 Calculate Calories Burned", use_container_width=True):
+    if st.button("🚀 Predict the Calorie Burned", use_container_width=True):
         # Create input array (Ensure order matches the training features)
         input_data = np.array([[effective_met, base_met, session_duration_hours, weight_kg, bmi, height_m]])
         
@@ -51,8 +51,8 @@ def prediction_page():
         prediction = model.predict(input_scaled)
         
         # Display Result
-        st.success(f"### Estimated Burn: {prediction[0]:.2f} kcal")
-        st.metric(label="Total Energy Expenditure", value=f"{prediction[0]:.1f} kcal")
+        st.success(f"### Predicted Calorie Burn: {prediction[0]:.2f} kcal")
+        
 
 if __name__ == "__main__":
     prediction_page()
