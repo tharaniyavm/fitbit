@@ -1,16 +1,16 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-from sklearn import metrics
-from sklearn.metrics import r2_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.tree import DecisionTreeRegressor
-from xgboost import XGBRegressor
-from sklearn.svm import SVR
+import streamlit as st # creating UI pages
+import pandas as pd # for data cleaning
+import numpy as np # for data organising
+from sklearn import metrics # used for calculating MAE,MSE,RMSE
+from sklearn.metrics import r2_score # used for calculating R2 score
+from sklearn.model_selection import train_test_split # to split the data between training and testing
+from sklearn.preprocessing import StandardScaler #used for scaling(adjusting the feature values to a common reange)
+from sklearn.linear_model import LinearRegression # A simple algorithm that predicts continuous values using a linear relationship between variables.
+from sklearn.neighbors import KNeighborsRegressor # Predicts values based on the average of the nearest similar data points
+from sklearn.ensemble import RandomForestRegressor # Combines multiple decision trees to improve prediction accuracy and reduce overfitting.
+from sklearn.tree import DecisionTreeRegressor # Uses tree-like conditions to split data and make predictions.
+from xgboost import XGBRegressor # powerful boosting algorithm that improves model performance by correcting previous errors.
+from sklearn.svm import SVR # Predicts values by finding the best boundary within a margin of error.
 
 # Page configuration
 st.set_page_config(page_title="Fitbit Model Evaluation", layout="wide")
@@ -31,8 +31,13 @@ if st.button("🚀 Start Processing"):
         fitbitdf.columns = fitbitdf.columns.str.lower().str.replace(' ', '_')
         fitbitdf.columns = fitbitdf.columns.str.replace(r'[^a-zA-Z0-9_]', '', regex=True)
         
+        
+         # --- Encoding ---
         categorical_cols = ['gender', 'workout_type']
         df_encoded = pd.get_dummies(fitbitdf, columns=categorical_cols, drop_first=False)
+        st.success(f"✅ Data encoding done for gender and workout_type. ")
+        
+        
         
         # Outlier Removal
         cols = ['weight_kg', 'height_m', 'fat_percentage']
@@ -43,14 +48,14 @@ if st.button("🚀 Start Processing"):
             lower, upper = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
             df_encoded = df_encoded[(df_encoded[col] >= lower) & (df_encoded[col] <= upper)]
         
-        st.success(f"✅ Data cleaned. Remaining records: {df_encoded.shape[0]}")
+        st.success(f"✅ Data cleaned. ")
 
     # 3. Feature Selection & Scaling
     with st.spinner("Preparing features..."):
         feature = df_encoded[['effective_met', 'base_met', 'session_duration_hours','weight_kg','bmi','height_m']]
         target = df_encoded['calories_burned_kcal']
-        
-        x_train, x_test, y_train, y_test = train_test_split(feature, target, test_size=0.2, random_state=4)
+        # split data into training and testing sets.
+        x_train, x_test, y_train, y_test = train_test_split(feature, target, test_size=0.2, random_state=4) #Testing Data Creation
         
         scaler = StandardScaler()
         x_train_scaled = scaler.fit_transform(x_train)
@@ -59,27 +64,27 @@ if st.button("🚀 Start Processing"):
 
     # 4. Model Training
     with st.spinner("Training models (Linear, KNN, RF, DT, XGB, SVR)..."):
-        # Linear Regression
-        linear_model = LinearRegression().fit(x_train_scaled, y_train)
+        # Linear Regression - A simple algorithm that predicts continuous values using a linear relationship between variables.
+        linear_model = LinearRegression().fit(x_train_scaled, y_train) #Testing
         y_pred_standard = linear_model.predict(x_test_scaled)
 
-        # KNN
+        # KNN - Predicts values based on the average of the nearest similar data points
         knn_model = KNeighborsRegressor(n_neighbors=5).fit(x_train_scaled, y_train)
         y_pred_knn = knn_model.predict(x_test_scaled)
 
-        # Random Forest
+        # Random Forest - Combines multiple decision trees to improve prediction accuracy and reduce overfitting.
         rf_model = RandomForestRegressor(n_estimators=100, random_state=42).fit(x_train_scaled, y_train)
         y_pred_rf = rf_model.predict(x_test_scaled)
 
-        # Decision Tree
+        # Decision Tree - Uses tree-like conditions to split data and make predictions.
         dt_model = DecisionTreeRegressor(random_state=42).fit(x_train_scaled, y_train)
         y_pred_dt = dt_model.predict(x_test_scaled)
 
-        # XGBoost
+        # XGBoost - powerful boosting algorithm that improves model performance by correcting previous errors.
         xgb_model = XGBRegressor(random_state=42).fit(x_train_scaled, y_train)
         y_pred_xgb = xgb_model.predict(x_test_scaled)
 
-        # SVR
+        # SVR - Predicts values by finding the best boundary within a margin of error.
         svr_model = SVR(kernel='rbf').fit(x_train_scaled, y_train)
         y_pred_svr = svr_model.predict(x_test_scaled)
         
@@ -120,5 +125,5 @@ if st.button("🚀 Start Processing"):
         st.bar_chart(df_results.set_index('Model')['R-squared'])
 
     best_model = df_results.iloc[0]['Model']
-    st.balloons()
+  
     st.success(f"🏆 **{best_model}** is the best performing model based on R-squared.")
